@@ -4,17 +4,40 @@ $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
-    'id' => 'basic',
+    'id' => 'ticket_booking',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'homeUrl' => '/',
+    'charset'=>'UTF-8',
+    'language' => 'ru_RU',
+    'name' => 'Ticket booking',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'reservation' => [
+            'basePath' =>  '@app/modules/reservation',
+            'class' => 'app\modules\reservation\Module',
+        ]
+    ],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'eGkOnFSYV_y4SLdtjKYR93nM0NW7_I_6',
+            'baseUrl' => '',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+              ],
+        ],
+        'response' => [
+            'formatters' => [
+                \yii\web\Response::FORMAT_JSON => [
+                    'class' => 'yii\web\JsonResponseFormatter',
+                    'prettyPrint' => YII_DEBUG, // используем "pretty" в режиме отладки
+                    'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                    // ...
+                ],
+            ],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -28,9 +51,6 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
             'useFileTransport' => true,
         ],
         'log' => [
@@ -43,14 +63,16 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                'GET index' => 'reservation/default/index',
+                'POST create' => 'reservation/default/create',
+                'DELETE delete/<id>' =>'reservation/default/delete',
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
@@ -61,14 +83,14 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1', '*'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1', '*'],
     ];
 }
 

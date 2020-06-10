@@ -10,6 +10,11 @@ services:
       MYSQL_PASSWORD: admin
     ports:
       - 3306:3306
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - 8085:8080
   php:
     image: yiisoftware/yii2-php:7.1-apache
     volumes:

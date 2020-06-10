@@ -17,9 +17,9 @@ class m200610_063339_create_reservation_table extends Migration
     {
         $this->createTable('{{%reservation}}', [
             'id' => $this->primaryKey(),
-            'datatime_created' => $this->notNull()->datetime(),
+            'datatime_created' => $this->datetime()->notNull(),
             'data_arrival' => $this->date(),
-            'status' => $this->boolean()->defaultValue(0),
+            'status' => $this->boolean()->defaultValue(0)->notNull(),
             'user_id' => $this->integer(),
         ]);
 
