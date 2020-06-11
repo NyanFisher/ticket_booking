@@ -12,6 +12,25 @@ class SiteController extends Controller
 {
     public $modelClass = 'app\models\User';
 
+    public function actionIndex()
+    {
+        return ['title' => 'Это API сервис',
+        "comment" => 'Для доступа нужен access_token',
+        'commands' => [
+            'GET /numbers  => Получить все записи',
+            'GET /numbers?id={}  => Получить запись по id',
+            'GET /numbers?page={}  => Получить все записи c пагинацией в 5',
+            'GET /numbers?status={}  => Получить запись с определенным статусом',
+            'GET /numbers?page={}&status={}  => Получить записи с пагинацией в 5 и статусом',
+            'DELETE /numbers/id  => Удалить запись по id',
+            'PUT PATCH /numbers/id  => Изменить запись по id',
+            'POST /numbers  => Создать запись',
+            'POST /sign-up  => Зарегистрироваться',
+            'POST /login  => Авторизироваться',
+        ]
+    ];
+    }
+
     public function actionRegistration()
     {
         $request = Yii::$app->getRequest();

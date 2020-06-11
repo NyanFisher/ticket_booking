@@ -41,7 +41,7 @@ class DefaultController extends Controller
         elseif ($status)
             $data = Reservation::find()->where(['status' => $status]);
         else
-            $data = Reservation::find();
+            return Reservation::find()->all();
             
 
         $dataProvider = new \yii\data\ActiveDataProvider([

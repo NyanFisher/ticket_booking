@@ -68,6 +68,7 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                '' => 'site/index',
                 'GET,HEAD numbers' => 'reservation/default/index',
                 'POST numbers' => 'reservation/default/create',
                 'DELETE numbers/<id:\d+>' =>'reservation/default/delete',
