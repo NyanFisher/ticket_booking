@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=mysql;dbname=ticket_booking',
+    'dsn' => 'mysql:host=mysql;dbname=reservation_number',
     'username' => 'root',
     'password' => 'root',
     'charset' => 'utf8',

@@ -2,32 +2,39 @@
 
 namespace app\models;
 
+use Yii;
+
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    public function rules()
+    {
+        return [
+            [['username', 'password'], 'required'],
+            [['username'], 'string', 'max' => 64],
+            [['password', 'access_token'], 'string', 'max' => 255],
+            [['username'], 'unique'],
+        ];
+    }
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'password' => 'Пароль',
+            'access_token' => 'Токен',
+            'username' => 'Ник',
+            'second_name' => 'Отчество',
+        ];
+    }
 
 
+    public static function tableName()
+    {
+        return 'user';
+    }
     /**
      * {@inheritdoc}
      */
@@ -99,6 +106,24 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return Yii::$app->security->validatePassword(md5($password), $this->password);
+    }
+
+    public function set_password($password)
+    {
+        $this->password = Yii::$app->security->generatePasswordHash(md5($password));
+    }
+
+    public function generate_access_token()
+    {
+        $this->access_token = Yii::$app->security->generateRandomString();
+    }
+
+    public function create($data)
+    {
+        $this->username = $data['username'];
+        $this->set_password($data['password']);
+        $this->generate_access_token();
+        $this->save();
     }
 }

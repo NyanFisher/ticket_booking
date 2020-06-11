@@ -3,126 +3,57 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
+use yii\rest\Controller;
 use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
+
+use app\models\User;
 
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+    public $modelClass = 'app\models\User';
+
+    public function actionRegistration()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+        $request = Yii::$app->getRequest();
+        $data =  $request->bodyParams;
+
+        validate_data($data);
+
+        $serializer = $this->serializeData($data);
+
+        $user = new User();
+        
+        $user->create($serializer);
+
+        return ['access_token' => $user->access_token];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
-    }
-
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
-
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+        $request = Yii::$app->getRequest();
+        $data =  $request->bodyParams;
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
+        validate_data($data);
 
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        $serializer = $this->serializeData($data);
+        
+        $user = User::findOne(['username' => $serializer['username']]);
+        if (!$user)
+            throw new \yii\web\BadRequestHttpException($message='User is not found');
+
+        if (!$user->validatePassword($serializer['password']))
+            throw new \yii\web\BadRequestHttpException($message='Error password');
+
+        return ['access_token' => $user->access_token];
     }
+}
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
+function validate_data($data)
+{
+    $attributes_from_data = array_keys($data);
+
+    if (!in_array('password', $attributes_from_data) || !in_array('username', $attributes_from_data))
     {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
+        throw new \yii\web\BadRequestHttpException($message='No attribute');
     }
 }

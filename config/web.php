@@ -4,13 +4,13 @@ $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
-    'id' => 'ticket_booking',
+    'id' => 'reservation_number',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'homeUrl' => '/',
     'charset'=>'UTF-8',
     'language' => 'ru_RU',
-    'name' => 'Ticket booking',
+    'name' => 'Reservation number',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -68,9 +68,13 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                'GET index' => 'reservation/default/index',
-                'POST create' => 'reservation/default/create',
-                'DELETE delete/<id>' =>'reservation/default/delete',
+                'GET,HEAD numbers' => 'reservation/default/index',
+                'POST numbers' => 'reservation/default/create',
+                'DELETE numbers/<id:\d+>' =>'reservation/default/delete',
+                'PUT,PATCH numbers/<id:\d+>' => 'reservation/default/update',
+                'GET,HEAD users-numbers' => 'reservation/default/get',
+                'POST sign-up' => 'site/registration',
+                'POST login' => 'site/login',
             ],
         ],
     ],
