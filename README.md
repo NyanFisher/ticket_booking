@@ -29,11 +29,11 @@ API
     - 'POST /login  => Авторизироваться',
 ### Параметры в формате JSON:
     **Для регистрации:**
-        - "username": string, not null,
-        - "password": string, not null,
+        - "username": строка, не может быть null,
+        - "password": строка, не может быть null
     **Для бронирования номеров:**
-        - "id": int,
-        - "datatime_created": string in format datetime, not null,
-        - "data_arrival": string in format date,
-        - "status": int,
-        - "user_id": int,
+        - "id": целое число,
+        - "datatime_created": строка в формате datetime, не может быть null,
+        - "data_arrival": строка в формате date,
+        - "status": целое число,
+        - "user_id": целое число
